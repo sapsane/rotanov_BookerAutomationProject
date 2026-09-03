@@ -1,7 +1,5 @@
 package core.settings;
 
-import core.models.Booking;
-
 public enum ApiEndpoints {
     PING("/ping"),
     BOOKING("/booking"); //Новый эндпоинт /booking
@@ -16,7 +14,8 @@ public enum ApiEndpoints {
     public  String getPath() {
         return path;
     }
-    public  String getPathByID(String id) {
-        return path+"/"+id;
+    /** Путь к конкретному ресурсу: id приходит параметром в момент вызова, а не хранится в константе. */
+    public  String getPathById (int id) {
+        return path + "/"+id;
     }
 }

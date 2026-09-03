@@ -3,6 +3,7 @@ package tests;
 import core.clients.APIClient;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,11 +18,12 @@ public class HealthCheckTests {
 
     //Тест на метод ping()
     @Test
-    public void testPing(){
+    @DisplayName("GET /ping отвечает 201 Created")
+    public void testPing() {
+
     // Выполняем GET запрос на /ping через APIClient
         Response response = apiClient.ping();
         assertThat(response.getStatusCode()).isEqualTo(201);
-
     }
 
 }
