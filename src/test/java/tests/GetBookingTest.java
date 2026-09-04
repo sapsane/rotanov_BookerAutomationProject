@@ -41,7 +41,7 @@ public class GetBookingTest {
     @Test
     @DisplayName("POST /booking создаёт бронирование и возвращает статус 200")
     public void createBookingReturns200() {
-        // Подготовка данных
+        // Подготовка данных Создаёшь Booking с данными - это твой эталон
         Booking requestBooking = new Booking();
         BookingDates dates = new BookingDates("2025-12-01", "2025-12-10");
         requestBooking.setFirstname("Alice");
@@ -63,7 +63,7 @@ public class GetBookingTest {
 
         //проверяем что bookingid не пустой
         assertThat(createBookingResponse.getBookingid()).isNotNull();
-
+        //сохраняем в переменную bookingid
         bookingId1=createBookingResponse.getBookingid();
        // System.out.println("bookingId1="+bookingId1);
 
@@ -82,16 +82,14 @@ public class GetBookingTest {
         // id не хардкодим: берём реально существующий из списка
         //int existingId = apiClient.getBookings().jsonPath().getList("bookingid", Integer.class).get(0);
 
-        createBookingReturns200();
-        int existingId=bookingId1;
-        //System.out.println("bookingId1="+bookingId1);
+        createBookingReturns200(); //создаем брогирование
+        int existingId=bookingId1; //присваеваем значение  bookingId1 из теста на создание
 
-        Response response = apiClient.getBookingById(existingId);
+        Response response = apiClient.getBookingById(existingId); //присваеваем значение и создаем get запрос
 
         assertThat(response.getStatusCode()).isEqualTo(200);
-        //System.out.println("requestBooking1="+requestBooking1);
 
-
+        // сверяем ответы из response get и request  post  запроса
         Booking fromServer = response.as(Booking.class);
         assertThat(fromServer.getFirstname()).isEqualTo(requestBooking1.getFirstname());
         assertThat(fromServer.getLastname()).isEqualTo(requestBooking1.getLastname());
@@ -100,16 +98,12 @@ public class GetBookingTest {
         assertThat(fromServer.getBookingdates().getCheckin()).isEqualTo(requestBooking1.getBookingdates().getCheckin());
         assertThat(fromServer.getBookingdates().getCheckout()).isEqualTo(requestBooking1.getBookingdates().getCheckout());
         assertThat(fromServer.getAdditionalneeds()).isEqualTo(requestBooking1.getAdditionalneeds());
-
-
     }
 
     @Test
     @DisplayName("GET /booking/{id} с несуществующим id возвращает 404")
     public void getBookingByUnknownIdReturns404() {
         Response response = apiClient.getBookingById(999_999_999);
-
         assertThat(response.getStatusCode()).isEqualTo(404);
-
     }
 }
