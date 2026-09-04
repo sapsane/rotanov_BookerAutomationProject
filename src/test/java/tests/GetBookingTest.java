@@ -5,6 +5,8 @@ import core.models.Booking;
 import core.models.BookingDates;
 import core.models.CreateBookingResponse;
 import io.restassured.response.Response;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetBookingTest {
 
+    private static final Log log = LogFactory.getLog(GetBookingTest.class);
     private APIClient apiClient;
+    public int bookingId1;
+    public Booking requestBooking1;
 
     // Инициализация API клиента перед каждым тестом
     @BeforeEach
@@ -37,7 +42,6 @@ public class GetBookingTest {
     @DisplayName("POST /booking создаёт бронирование и возвращает статус 200")
     public void createBookingReturns200() {
         // Подготовка данных
-
         Booking requestBooking = new Booking();
         BookingDates dates = new BookingDates("2025-12-01", "2025-12-10");
         requestBooking.setFirstname("Alice");
@@ -46,6 +50,8 @@ public class GetBookingTest {
         requestBooking.setDepositpaid(true);
         requestBooking.setBookingdates(dates);
         requestBooking.setAdditionalneeds("Early check-in");
+
+        requestBooking1=requestBooking;
 
         // Отправка запроса
         Response response = apiClient.createBooking(requestBooking);
@@ -57,30 +63,45 @@ public class GetBookingTest {
 
         //проверяем что bookingid не пустой
         assertThat(createBookingResponse.getBookingid()).isNotNull();
-        //сравниваем два объекта
-        assertThat(createBookingResponse.getBooking().equals(requestBooking));
 
+        bookingId1=createBookingResponse.getBookingid();
+       // System.out.println("bookingId1="+bookingId1);
+
+
+        //assertThat(createBookingResponse.getBooking()).isEqualTo(requestBooking);
+        // попросить AssertJ сравнить поля рекурсивно:
+        //assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+        assertThat(createBookingResponse.getBooking()).usingRecursiveComparison().isEqualTo(requestBooking);
 
     }
 
     @Test
     @DisplayName("GET /booking/{id} возвращает заполненное бронирование")
     public void getBookingByIdReturnsFilledBooking() {
+
         // id не хардкодим: берём реально существующий из списка
-        int existingId = apiClient.getBookings().jsonPath().getList("bookingid", Integer.class).get(0);
+        //int existingId = apiClient.getBookings().jsonPath().getList("bookingid", Integer.class).get(0);
+
+        createBookingReturns200();
+        int existingId=bookingId1;
+        //System.out.println("bookingId1="+bookingId1);
 
         Response response = apiClient.getBookingById(existingId);
 
         assertThat(response.getStatusCode()).isEqualTo(200);
+        //System.out.println("requestBooking1="+requestBooking1);
 
-        Booking booking = response.as(Booking.class);
-        assertThat(booking.getFirstname()).isNotBlank();
-        assertThat(booking.getLastname()).isNotBlank();
-        assertThat(booking.getTotalprice()).isNotNull();
-        assertThat(booking.getDepositpaid()).isNotNull();
-        assertThat(booking.getBookingdates()).isNotNull();
-        assertThat(booking.getBookingdates().getCheckin()).isNotBlank();
-        assertThat(booking.getBookingdates().getCheckout()).isNotBlank();
+
+        Booking fromServer = response.as(Booking.class);
+        assertThat(fromServer.getFirstname()).isEqualTo(requestBooking1.getFirstname());
+        assertThat(fromServer.getLastname()).isEqualTo(requestBooking1.getLastname());
+        assertThat(fromServer.getTotalprice()).isEqualTo(requestBooking1.getTotalprice());
+        assertThat(fromServer.getDepositpaid()).isEqualTo(requestBooking1.getDepositpaid());
+        assertThat(fromServer.getBookingdates().getCheckin()).isEqualTo(requestBooking1.getBookingdates().getCheckin());
+        assertThat(fromServer.getBookingdates().getCheckout()).isEqualTo(requestBooking1.getBookingdates().getCheckout());
+        assertThat(fromServer.getAdditionalneeds()).isEqualTo(requestBooking1.getAdditionalneeds());
+
+
     }
 
     @Test
