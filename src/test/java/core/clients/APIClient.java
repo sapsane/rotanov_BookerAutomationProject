@@ -3,7 +3,11 @@ package core.clients;
 import core.models.Booking;
 import core.settings.ApiEndpoints;
 import io.restassured.RestAssured;
+import io.restassured.filter.Filter;
+import io.restassured.filter.FilterContext;
 import io.restassured.response.Response;
+import io.restassured.specification.FilterableRequestSpecification;
+import io.restassured.specification.FilterableResponseSpecification;
 import io.restassured.specification.RequestSpecification;
 
 
@@ -18,6 +22,7 @@ import java.util.Properties;
 public class APIClient {
 
     private final String baseUrl;
+    private  String token;
 
     public APIClient() {
         this.baseUrl = determineBaseUrl();
@@ -45,8 +50,37 @@ public class APIClient {
         return RestAssured.given()
                 .baseUri(baseUrl)
                 .header("Content-Type", "application/json")
-                .header("Accept", "application/json");
+                .header("Accept", "application/json")
+                .filter(addAuthTokenFilter());
     }
+    public void createToken(String username,String password){
+        //Тело запроса для получения токена
+        String requestBody = String.format("{\"username\": \"%s\", \"password\": \"%s\" }",username,password);
+
+        Response response = getRequestSpec()
+                .body(requestBody)
+                .when()
+                .post(ApiEndpoints.AUTH.getPath()) // используем ENUM для эндпойнта /auth
+                .then()
+                .statusCode(200) //ожидаемый статус код 200 ок
+                .extract()
+                .response();
+                // извлекаем токен из ответа
+        token = response.jsonPath().getString("token");
+    }
+
+    private Filter addAuthTokenFilter(){
+        return (FilterableRequestSpecification requestSpec,
+                FilterableResponseSpecification responceSpec,
+                FilterContext ctx) -> {
+            if (token != null) {
+                requestSpec.header("Cookie", "token=" + token);
+            }
+            return ctx.next(requestSpec, responceSpec);
+        };
+    }
+
+
 
     /** GET /ping */
     public Response ping() {
@@ -74,6 +108,18 @@ public class APIClient {
                 .body(booking)
                 .when()
                 .post(ApiEndpoints.BOOKING.getPath());
+    }
+
+    public Response deleteBooking(int bookingId){
+        return getRequestSpec()
+                .pathParam("id",bookingId) // указываем path parametr для ID
+                .when()
+                .delete(ApiEndpoints.BOOKING.getPath() +"/{id}")  //используем параметр пути в запросе
+                .then()
+                .log().all()
+                .statusCode(201)  // предполагаемый код ответа
+                .extract()
+                .response();
     }
 }
 

@@ -25,6 +25,7 @@ public class GetBookingTest {
     @BeforeEach
     public void setup() {
         apiClient = new APIClient();
+        apiClient.createToken("admin","password123");
         }
     @Test
     @DisplayName("GET /booking возвращает непустой список бронирований с валидными id")
@@ -105,5 +106,25 @@ public class GetBookingTest {
     public void getBookingByUnknownIdReturns404() {
         Response response = apiClient.getBookingById(999_999_999);
         assertThat(response.getStatusCode()).isEqualTo(404);
+        assertThat(response.asString()).contains("Not Found");
+    }
+
+    @Test
+    @DisplayName("DELETE /booking/{id} с несуществующим id возвращает 404")
+    public void deleteBooking() {
+        // id не хардкодим: берём реально существующий из списка
+        //apiClient.getBookings()-получить список всех id бронирований(GetBookingIds)
+        //existingId-выбрать один id из списка полученных
+        int existingId = apiClient.getBookings().jsonPath().getList("bookingid", Integer.class).get(0);
+
+        //-удалить этот id
+        Response response1 = apiClient.deleteBooking(existingId);
+        assertThat(response1.getStatusCode()).isEqualTo(201);
+        assertThat(response1.asString()).contains("Created");
+
+        //-проверить что этого id не существует
+        Response response2 = apiClient.getBookingById(existingId);
+        assertThat(response2.getStatusCode()).isEqualTo(404);
+        assertThat(response2.asString()).contains("Not Found");
     }
 }
