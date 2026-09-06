@@ -1,0 +1,29 @@
+package tests;
+
+import core.clients.APIClient;
+import io.restassured.response.Response;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class HealthCheckTests {
+    private APIClient apiClient;
+
+    // Инициализация API клиента перед каждым тестом
+    @BeforeEach
+    public void Setup() {
+        apiClient = new APIClient(); }
+
+    //Тест на метод ping()
+    @Test
+    @DisplayName("GET /ping отвечает 201 Created")
+    public void testPing() {
+
+    // Выполняем GET запрос на /ping через APIClient
+        Response response = apiClient.ping();
+        assertThat(response.getStatusCode()).isEqualTo(201);
+    }
+
+}
