@@ -92,6 +92,7 @@ public class APIClient {
     /** GET /booking - список всех бронирований (только id). */
     public Response getBookings() {
         return getRequestSpec()
+                .log().all()
                 .when()
                 .get(ApiEndpoints.BOOKING.getPath());
     }
@@ -106,8 +107,13 @@ public class APIClient {
     public Response createBooking(Booking booking) {
         return getRequestSpec()
                 .body(booking)
+                .log().all()
                 .when()
-                .post(ApiEndpoints.BOOKING.getPath());
+                .post(ApiEndpoints.BOOKING.getPath())
+                .then()
+                .log().all()
+                .extract()
+                .response();
     }
 
     public Response deleteBooking(int bookingId){
@@ -120,6 +126,40 @@ public class APIClient {
                 .statusCode(201)  // предполагаемый код ответа
                 .extract()
                 .response();
+    }
+    public Response createBooking2(String newBooking) {
+        return getRequestSpec()
+                .body(newBooking)
+                .log().all()
+                .when()
+                .post(ApiEndpoints.BOOKING.getPath())
+                .then()
+                .log().all()
+                .extract()
+                .response();
+    }
+    public Response putBooking(int bookingId,String newBooking) {
+        return getRequestSpec()
+                .body(newBooking)
+                .pathParam("id", bookingId) // указываем path parametr для ID
+                .when()
+                .put(ApiEndpoints.BOOKING.getPath() + "/{id}")  //используем параметр пути в запросе
+                .then()
+                .log().all()
+                .extract()
+                .response();
+    }
+    public Response patchBooking (int bookingId,String newBooking){
+        return getRequestSpec()
+                .body(newBooking)
+                .pathParam("id", bookingId) // указываем path parametr для ID
+                .when()
+                .patch(ApiEndpoints.BOOKING.getPath() + "/{id}")  //используем параметр пути в запросе
+                .then()
+                .log().all()
+                .extract()
+                .response();
+
     }
 }
 

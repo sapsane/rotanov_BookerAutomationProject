@@ -18,8 +18,8 @@ public class GetBookingTest {
 
     private static final Log log = LogFactory.getLog(GetBookingTest.class);
     private APIClient apiClient;
-    public int bookingId1;
-    public Booking requestBooking1;
+    private int bookingId1;
+    private Booking requestBooking1;
 
     // Инициализация API клиента перед каждым тестом
     @BeforeEach
@@ -66,7 +66,7 @@ public class GetBookingTest {
         assertThat(createBookingResponse.getBookingid()).isNotNull();
         //сохраняем в переменную bookingid
         bookingId1=createBookingResponse.getBookingid();
-       // System.out.println("bookingId1="+bookingId1);
+        System.out.println("bookingId1="+bookingId1);
 
 
         //assertThat(createBookingResponse.getBooking()).isEqualTo(requestBooking);
@@ -83,7 +83,7 @@ public class GetBookingTest {
         // id не хардкодим: берём реально существующий из списка
         //int existingId = apiClient.getBookings().jsonPath().getList("bookingid", Integer.class).get(0);
 
-        createBookingReturns200(); //создаем брогирование
+        System.out.println("bookingId1="+bookingId1); //создаем брогирование
         int existingId=bookingId1; //присваеваем значение  bookingId1 из теста на создание
 
         Response response = apiClient.getBookingById(existingId); //присваеваем значение и создаем get запрос
@@ -119,6 +119,7 @@ public class GetBookingTest {
 
         //-удалить этот id
         Response response1 = apiClient.deleteBooking(existingId);
+        // проверки
         assertThat(response1.getStatusCode()).isEqualTo(201);
         assertThat(response1.asString()).contains("Created");
 
