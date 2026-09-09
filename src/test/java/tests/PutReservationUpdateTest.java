@@ -24,7 +24,7 @@ public class PutReservationUpdateTest {
     private NewBooking newBooking;  // новый объект для создания бронирования
     private NewBooking newBooking2;
     private int bookingId1;
-    private NewBooking requestBooking2;
+
 
 
     @BeforeEach
@@ -45,7 +45,7 @@ public class PutReservationUpdateTest {
         newBooking.setBookingdates(dates);
         newBooking.setAdditionalneeds("Early check-in");
 
-        requestBooking2 = newBooking;
+
 
         String requestBody = objectMapper.writeValueAsString(newBooking);
         // Отправка запроса
@@ -59,11 +59,11 @@ public class PutReservationUpdateTest {
         String responseBody = response.asString();
         createBookingResponse = objectMapper.readValue(responseBody, CreateBookingResponse.class);
 
-        //проверяем что bookingid не пустой
+        //проверяем что booking не пустой
         assertThat(createBookingResponse).isNotNull();
-        //сохраняем в переменную bookingId
+        //сохраняем в переменную bookingId = getBookingid()
         bookingId1 = createBookingResponse.getBookingid();
-        //System.out.println("bookingId1="+bookingId1);
+
     }
     @Test
     @DisplayName("Обновление бронирования ( PUT /booking/{id} )")
@@ -83,7 +83,7 @@ public class PutReservationUpdateTest {
         // Отправка запроса
         int existingId=bookingId1; //присваеваем значение  bookingId1 из теста на создание
 
-        Response response = apiClient.putBooking(existingId,requestBody); //присваеваем значение и создаем get запрос
+        Response response = apiClient.putBooking(existingId,requestBody); //присваеваем значение и создаем put запрос
 
         assertThat(response.getStatusCode()).isEqualTo(200);
 

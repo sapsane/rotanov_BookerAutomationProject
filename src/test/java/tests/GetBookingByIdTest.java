@@ -61,7 +61,7 @@ public class GetBookingByIdTest {
         String responseBody = response.asString();
         createBookingResponse = objectMapper.readValue(responseBody, CreateBookingResponse.class);
 
-        //проверяем что bookingid не пустой
+        //проверяем что booking не пустой
         assertThat(createBookingResponse).isNotNull();
         //сохраняем в переменную bookingId
         bookingId1 = createBookingResponse.getBookingid();

@@ -19,14 +19,14 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class Get_Booking1Test {
+public class GetBooking_1Test {
     private static final Log log = LogFactory.getLog(GetBookingTest.class);
     private APIClient apiClient;
     private ObjectMapper objectMapper;
     private CreateBookingResponse createBookingResponse; // храним созданное бронирование
     private NewBooking newBooking;  // новый объект для создания бронирования
     private int bookingId1;
-    private NewBooking requestBooking2;
+
 
     // Инициализация API клиента перед каждым тестом
     @BeforeEach
@@ -37,7 +37,7 @@ public class Get_Booking1Test {
         objectMapper = new ObjectMapper();
         apiClient.createToken("admin", "password123");
 
-        // Подготовка данных Создаёшь объект Booking с данными - это твой эталон
+        // Подготовка данных Создаёшь объект Booking с данными
         newBooking = new NewBooking();
         newBooking.setFirstname("Alice");
         newBooking.setLastname("Tester");
@@ -47,7 +47,7 @@ public class Get_Booking1Test {
         newBooking.setBookingdates(dates);
         newBooking.setAdditionalneeds("Early check-in");
 
-        requestBooking2 = newBooking;
+
 
         String requestBody = objectMapper.writeValueAsString(newBooking);
         // Отправка запроса
@@ -61,7 +61,7 @@ public class Get_Booking1Test {
         String responseBody = response.asString();
         createBookingResponse = objectMapper.readValue(responseBody, CreateBookingResponse.class);
 
-        //проверяем что bookingid не пустой
+        //проверяем что booking не пустой
         assertThat(createBookingResponse).isNotNull();
         //сохраняем в переменную bookingId
         bookingId1 = createBookingResponse.getBookingid();

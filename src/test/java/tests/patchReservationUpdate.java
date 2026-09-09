@@ -1,5 +1,6 @@
 package tests;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import core.clients.APIClient;
@@ -9,11 +10,13 @@ import core.models.NewBooking;
 import io.restassured.response.Response;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 
 public class patchReservationUpdate {
     private static final Log log = LogFactory.getLog(GetBookingTest.class);
@@ -57,7 +60,7 @@ public class patchReservationUpdate {
         String responseBody = response.asString();
         createBookingResponse = objectMapper.readValue(responseBody, CreateBookingResponse.class);
 
-        //проверяем что bookingid не пустой
+        //проверяем что booking не пустой
         assertThat(createBookingResponse).isNotNull();
         //сохраняем в переменную bookingId
         bookingId1 = createBookingResponse.getBookingid();
@@ -80,7 +83,7 @@ public class patchReservationUpdate {
 
         assertThat(response.getStatusCode()).isEqualTo(200);
 
-        // сверяем ответы из response  и request  put  запроса
+        // сверяем ответы из response  и request  patch  запроса
         NewBooking fromServer = response.as( NewBooking.class);
         assertThat(fromServer.getFirstname()).isEqualTo(requestBooking2.getFirstname());
         assertThat(fromServer.getLastname()).isEqualTo(newBooking.getLastname());
@@ -90,5 +93,15 @@ public class patchReservationUpdate {
         assertThat(fromServer.getBookingdates().getCheckout()).isEqualTo(newBooking.getBookingdates().getCheckout());
         assertThat(fromServer.getAdditionalneeds()).isEqualTo(newBooking.getAdditionalneeds());
     }
+    @AfterEach
+    public void tearDown(){
+        // удалаяем созданное бронирование
+        apiClient.createToken("admin","password123");
+        apiClient.deleteBooking(bookingId1);
 
+        Response response2 = apiClient.getBookingById(bookingId1);
+        assertThat(response2.getStatusCode()).isEqualTo(404);
+        assertThat(response2.asString()).contains("Not Found");
+
+    }
 }

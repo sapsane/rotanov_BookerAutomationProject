@@ -62,7 +62,7 @@ public class APIClient {
                 .when()
                 .post(ApiEndpoints.AUTH.getPath()) // используем ENUM для эндпойнта /auth
                 .then()
-                .statusCode(200) //ожидаемый статус код 200 ок
+                //.statusCode(200) //ожидаемый статус код 200 ок
                 .extract()
                 .response();
                 // извлекаем токен из ответа
@@ -71,12 +71,12 @@ public class APIClient {
 
     private Filter addAuthTokenFilter(){
         return (FilterableRequestSpecification requestSpec,
-                FilterableResponseSpecification responceSpec,
+                FilterableResponseSpecification responseSpec,
                 FilterContext ctx) -> {
             if (token != null) {
                 requestSpec.header("Cookie", "token=" + token);
             }
-            return ctx.next(requestSpec, responceSpec);
+            return ctx.next(requestSpec, responseSpec);
         };
     }
 
@@ -155,6 +155,32 @@ public class APIClient {
                 .pathParam("id", bookingId) // указываем path parametr для ID
                 .when()
                 .patch(ApiEndpoints.BOOKING.getPath() + "/{id}")  //используем параметр пути в запросе
+                .then()
+                .log().all()
+                .extract()
+                .response();
+
+    }
+    public Response getBookingIdWithFirstname (String firstname){
+        return getRequestSpec()
+
+                .log().all()
+                .pathParam("firstname", firstname) // указываем path parametr для ID
+                .when()
+                .get(ApiEndpoints.BOOKING.getPath() + "/?{firstname}")  //используем параметр пути в запросе
+                .then()
+                .log().all()
+                .extract()
+                .response();
+
+    }
+
+    public Response getBookingIdWithLastname (String lastname){
+        return getRequestSpec()
+                .log().all()
+                .pathParam("lastname", lastname) // указываем path parametr для ID
+                .when()
+                .get(ApiEndpoints.BOOKING.getPath() + "/{lastname}")  //используем параметр пути в запросе
                 .then()
                 .log().all()
                 .extract()

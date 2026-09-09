@@ -1,14 +1,16 @@
 package core.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 
-    /**
+/**
      * Модель бронирования.
      * Пустой конструктор + сеттеры - всё, что нужно Jackson: он создаёт объект и заполняет поля.
      * Никаких @JsonCreator: двух конкурирующих конструкторов в одном классе быть не должно.
      */
     @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonInclude(JsonInclude.Include.NON_NULL)   // <- вот сюда
     public class NewBooking {
 
         private String firstname;
