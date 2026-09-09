@@ -180,7 +180,7 @@ public class APIClient {
                 .log().all()
                 .pathParam("lastname", lastname) // указываем path parametr для ID
                 .when()
-                .get(ApiEndpoints.BOOKING.getPath() + "/?lastname={lastname}")  //используем параметр пути в запросе
+                .get(ApiEndpoints.BOOKING.getPath() + "?lastname={lastname}")  //используем параметр пути в запросе
                 .then()
                 .log().all()
                 .extract()
@@ -193,7 +193,7 @@ public class APIClient {
                 .pathParam("firstname",firstname) // указываем path parametr для ID
                 .pathParam("lastname", lastname)
                 .when()
-                .get(ApiEndpoints.BOOKING.getPath() + "/?firstname={firstname}&lastname={lastname}")  //используем параметр пути в запросе
+                .get(ApiEndpoints.BOOKING.getPath() + "?firstname={firstname}&lastname={lastname}")  //используем параметр пути в запросе
                 .then()
                 .log().all()
                 .extract()

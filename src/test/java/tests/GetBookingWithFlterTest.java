@@ -107,13 +107,49 @@ public class GetBookingWithFlterTest {
         Response response3 = apiClient.getBookingIdWithFirstname(requestBooking1.getFirstname());
         assertThat(response3.getStatusCode()).isEqualTo(200);
 
+        //выбираем один bookingid из списка
+        int existingId1 = apiClient.getBookingIdWithFirstname(requestBooking1.getFirstname())
+                .jsonPath().getList("bookingid", Integer.class).get(0);
+        //System.out.println("existingId="+existingId);
+
+        //Тело ответа содержит только те бронирования, которые соответствуют
+        //фильтрующим параметрам.
+        Response response21 = apiClient.getBookingById(existingId1);
+        NewBooking fromServer1 = response21.as(NewBooking.class);
+        assertThat(fromServer1.getFirstname()).isEqualTo(requestBooking1.getFirstname());
+        //------------------------------------
+
+
+
         // фильтрация по Lastname
         Response response4 = apiClient.getBookingIdWithLastname(requestBooking2.getLastname());
         assertThat(response4.getStatusCode()).isEqualTo(200);
+        
+        //----//выбираем один bookingid из списка---------------------
+        int existingId2 = apiClient.getBookingIdWithLastname(requestBooking2.getLastname())
+                .jsonPath().getList("bookingid", Integer.class).get(0);
+        //--Тело ответа содержит только те бронирования, которые соответствуют
+        //фильтрующим параметрам.--------------
+        Response response22 = apiClient.getBookingById(existingId2);
+        NewBooking fromServer2 = response22.as(NewBooking.class);
+        assertThat(fromServer2.getLastname()).isEqualTo(requestBooking2.getLastname());
+
+
 
         // фильтрация по Firstname и Lastname
-        Response response8 = apiClient.getBookingIdWithFirstnameAndLastname(requestBooking1.getFirstname(),requestBooking1.getLastname());
+        Response response8 = apiClient.getBookingIdWithFirstnameAndLastname(requestBooking1.getFirstname(),
+                                requestBooking1.getLastname());
         assertThat(response8.getStatusCode()).isEqualTo(200);
+
+        //выбираем один bookingid из списка--
+        int existingId3 = apiClient.getBookingIdWithFirstnameAndLastname(requestBooking1.getFirstname(),
+                requestBooking1.getLastname()).jsonPath().getList("bookingid", Integer.class).get(0);
+        // Тело ответа содержит только те бронирования, которые соответствуют
+        //фильтрующим параметрам.--------------
+        Response response23 = apiClient.getBookingById(existingId3);
+        NewBooking fromServer3 = response23.as(NewBooking.class);
+        assertThat(fromServer3.getFirstname()).isEqualTo(requestBooking1.getFirstname());
+        assertThat(fromServer3.getLastname()).isEqualTo(requestBooking1.getLastname());
     }
 
     @AfterEach
