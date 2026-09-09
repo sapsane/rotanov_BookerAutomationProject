@@ -30,7 +30,6 @@ public class GetBooking_1Test {
 
     // Инициализация API клиента перед каждым тестом
     @BeforeEach
-    @DisplayName("предусловия создание бронирования Create )")
     public void setup() throws JsonProcessingException {
 
         apiClient = new APIClient();
@@ -81,8 +80,6 @@ public class GetBooking_1Test {
     }
 
     @AfterEach
-    @DisplayName("пост условия. Удалить созданное бронирование, отправив DELETE-запрос на\n" +
-            "/booking/{bookingid} ")
     public void tearDown() {
         // удалаяем созданное бронирование
         apiClient.createToken("admin", "password123");

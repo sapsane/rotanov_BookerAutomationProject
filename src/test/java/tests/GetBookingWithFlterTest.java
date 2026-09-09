@@ -103,22 +103,36 @@ public class GetBookingWithFlterTest {
 
 
         // Отправка запроса
-        Response response3 = apiClient.getBookingIdWithFirstname("Alice1");
-         //присваеваем значение  bookingId1 из теста на создание
+        // фильтрация по Firstname
+        Response response3 = apiClient.getBookingIdWithFirstname(requestBooking1.getFirstname());
         assertThat(response3.getStatusCode()).isEqualTo(200);
 
+        // фильтрация по Lastname
+        Response response4 = apiClient.getBookingIdWithLastname(requestBooking2.getLastname());
+        assertThat(response4.getStatusCode()).isEqualTo(200);
+
+        // фильтрация по Firstname и Lastname
+        Response response8 = apiClient.getBookingIdWithFirstnameAndLastname(requestBooking1.getFirstname(),requestBooking1.getLastname());
+        assertThat(response8.getStatusCode()).isEqualTo(200);
     }
-    /*
+
     @AfterEach
     public void tearDown() {
         // удалаяем созданное бронирование
         apiClient.createToken("admin", "password123");
         apiClient.deleteBooking(bookingId1);
 
-        Response response2 = apiClient.getBookingById(bookingId1);
-        assertThat(response2.getStatusCode()).isEqualTo(404);
-        assertThat(response2.asString()).contains("Not Found");
+        Response response5 = apiClient.getBookingById(bookingId1);
+        assertThat(response5.getStatusCode()).isEqualTo(404);
+        assertThat(response5.asString()).contains("Not Found");
+
+        //--------удалаяем созданное бронирование-------------------------
+        apiClient.deleteBooking(bookingId2);
+
+        Response response7 = apiClient.getBookingById(bookingId2);
+        assertThat(response7.getStatusCode()).isEqualTo(404);
+        assertThat(response7.asString()).contains("Not Found");
     }
 
-     */
+
 }
