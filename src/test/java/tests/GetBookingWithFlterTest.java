@@ -98,12 +98,9 @@ public class GetBookingWithFlterTest {
 
     }
     @Test
-    @DisplayName("Получение бронирований с фильтрацией по параметрам")
-    public void getBookingWithName() throws JsonProcessingException {
-
-
-        // Отправка запроса
-        // фильтрация по Firstname
+    @DisplayName("Получение бронирований с фильтрацией по параметру Firstname")
+    public void getBookingWithFirstname() throws JsonProcessingException {
+        // Отправка запроса // фильтрация по Firstname
         Response response3 = apiClient.getBookingIdWithFirstname(requestBooking1.getFirstname());
         assertThat(response3.getStatusCode()).isEqualTo(200);
 
@@ -117,14 +114,14 @@ public class GetBookingWithFlterTest {
         Response response21 = apiClient.getBookingById(existingId1);
         NewBooking fromServer1 = response21.as(NewBooking.class);
         assertThat(fromServer1.getFirstname()).isEqualTo(requestBooking1.getFirstname());
-        //------------------------------------
+    }
 
-
-
-        // фильтрация по Lastname
+    @Test
+    @DisplayName("Получение бронирований с фильтрацией по праметру Lastname")
+    public void getBookingWithLastname() throws JsonProcessingException {
         Response response4 = apiClient.getBookingIdWithLastname(requestBooking2.getLastname());
         assertThat(response4.getStatusCode()).isEqualTo(200);
-        
+
         //----//выбираем один bookingid из списка---------------------
         int existingId2 = apiClient.getBookingIdWithLastname(requestBooking2.getLastname())
                 .jsonPath().getList("bookingid", Integer.class).get(0);
@@ -133,12 +130,14 @@ public class GetBookingWithFlterTest {
         Response response22 = apiClient.getBookingById(existingId2);
         NewBooking fromServer2 = response22.as(NewBooking.class);
         assertThat(fromServer2.getLastname()).isEqualTo(requestBooking2.getLastname());
+    }
 
-
-
+    @Test
+    @DisplayName("Получение бронирований с фильтрацией по праметрам Firstname и Lastname")
+    public void getBookingWithFirstnameAndLastname() throws JsonProcessingException {
         // фильтрация по Firstname и Lastname
         Response response8 = apiClient.getBookingIdWithFirstnameAndLastname(requestBooking1.getFirstname(),
-                                requestBooking1.getLastname());
+                requestBooking1.getLastname());
         assertThat(response8.getStatusCode()).isEqualTo(200);
 
         //выбираем один bookingid из списка--
