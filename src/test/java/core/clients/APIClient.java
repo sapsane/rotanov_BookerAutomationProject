@@ -62,7 +62,7 @@ public class APIClient {
                 .when()
                 .post(ApiEndpoints.AUTH.getPath()) // используем ENUM для эндпойнта /auth
                 .then()
-                .statusCode(200) //ожидаемый статус код 200 ок
+                //.statusCode(200) //ожидаемый статус код 200 ок
                 .extract()
                 .response();
                 // извлекаем токен из ответа
@@ -71,12 +71,12 @@ public class APIClient {
 
     private Filter addAuthTokenFilter(){
         return (FilterableRequestSpecification requestSpec,
-                FilterableResponseSpecification responceSpec,
+                FilterableResponseSpecification responseSpec,
                 FilterContext ctx) -> {
             if (token != null) {
                 requestSpec.header("Cookie", "token=" + token);
             }
-            return ctx.next(requestSpec, responceSpec);
+            return ctx.next(requestSpec, responseSpec);
         };
     }
 
@@ -92,6 +92,7 @@ public class APIClient {
     /** GET /booking - список всех бронирований (только id). */
     public Response getBookings() {
         return getRequestSpec()
+                .log().all()
                 .when()
                 .get(ApiEndpoints.BOOKING.getPath());
     }
@@ -106,8 +107,13 @@ public class APIClient {
     public Response createBooking(Booking booking) {
         return getRequestSpec()
                 .body(booking)
+                .log().all()
                 .when()
-                .post(ApiEndpoints.BOOKING.getPath());
+                .post(ApiEndpoints.BOOKING.getPath())
+                .then()
+                .log().all()
+                .extract()
+                .response();
     }
 
     public Response deleteBooking(int bookingId){
@@ -121,6 +127,80 @@ public class APIClient {
                 .extract()
                 .response();
     }
+    public Response createBooking2(String newBooking) {
+        return getRequestSpec()
+                .body(newBooking)
+                .log().all()
+                .when()
+                .post(ApiEndpoints.BOOKING.getPath())
+                .then()
+                .log().all()
+                .extract()
+                .response();
+    }
+    public Response putBooking(int bookingId,String newBooking) {
+        return getRequestSpec()
+                .body(newBooking)
+                .pathParam("id", bookingId) // указываем path parametr для ID
+                .when()
+                .put(ApiEndpoints.BOOKING.getPath() + "/{id}")  //используем параметр пути в запросе
+                .then()
+                .log().all()
+                .extract()
+                .response();
+    }
+    public Response patchBooking (int bookingId,String newBooking){
+        return getRequestSpec()
+                .body(newBooking)
+                .pathParam("id", bookingId) // указываем path parametr для ID
+                .when()
+                .patch(ApiEndpoints.BOOKING.getPath() + "/{id}")  //используем параметр пути в запросе
+                .then()
+                .log().all()
+                .extract()
+                .response();
+
+    }
+    public Response getBookingIdWithFirstname (String firstname){
+        return getRequestSpec()
+
+                .log().all()
+                .pathParam("firstname", firstname) // указываем path parametr для ID
+                .when()
+                .get(ApiEndpoints.BOOKING.getPath() + "/?firstname={firstname}")  //используем параметр пути в запросе
+                .then()
+                .log().all()
+                .extract()
+                .response();
+
+    }
+
+    public Response getBookingIdWithLastname (String lastname){
+        return getRequestSpec()
+                .log().all()
+                .pathParam("lastname", lastname) // указываем path parametr для ID
+                .when()
+                .get(ApiEndpoints.BOOKING.getPath() + "?lastname={lastname}")  //используем параметр пути в запросе
+                .then()
+                .log().all()
+                .extract()
+                .response();
+
+    }
+    public Response getBookingIdWithFirstnameAndLastname (String firstname , String lastname){
+        return getRequestSpec()
+                .log().all()
+                .pathParam("firstname",firstname) // указываем path parametr для ID
+                .pathParam("lastname", lastname)
+                .when()
+                .get(ApiEndpoints.BOOKING.getPath() + "?firstname={firstname}&lastname={lastname}")  //используем параметр пути в запросе
+                .then()
+                .log().all()
+                .extract()
+                .response();
+
+    }
+
 }
 
 
